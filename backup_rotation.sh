@@ -410,7 +410,7 @@ if [ ! $FTP_BACKUP_OPTION -eq 0 ]; then
   done
   echo "bye" >>  $TMP_DIR/backup.incoming/ftp_command.tmp
 
-  ftp -n -v $FTP_HOST $FTP_PORT < $TMP_DIR/backup.incoming/ftp_command.tmp
+  ftp -n -v -p $FTP_HOST $FTP_PORT < $TMP_DIR/backup.incoming/ftp_command.tmp
 
   echo "FTP Backup finish" | mail -s "$EMAIL_SUBJECT_TAG FTP backup finished !" $MAIL
 fi
