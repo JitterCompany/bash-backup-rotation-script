@@ -138,6 +138,16 @@ do
       FTP_BACKUP_OPTION=1
       ;;
 
+    --hostname)
+      if [[ "$#" -gt 1 && ! "$2" = \-* ]]; then
+       HOST=${2%/}
+       shift
+      else
+        echo "Error in --hostname syntax. Script failed."
+        exit 1
+      fi
+      ;;
+
     --ftp)
       FTP_BACKUP_OPTION=1
       if [ "$#" -gt 1 ]; then
