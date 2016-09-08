@@ -36,9 +36,9 @@
 #       - target: where to send the files
 #
 # LOCAL BACKUPS
-# type    hostname    sql   host     database        user            password            files  directory                    target
+# type    hostname    sql   host     database   user     password     files   directory                 target
 
-  local   localhost   7	    dbHost   dbName	    databaseUser    dbPassword   6      /source/files/to/backup            /backup/target/location
+  local   localhost   7	    dbHost   dbName     dbUser   dbPassword   6       /source/files/to/backup   /backup/target/location
 
 
 #       FTP Backups
@@ -58,6 +58,6 @@
 #       - ftp-password: the password to your ftp account
 #
 # FTP BACKUPS
-# type    hostname    sql   host     database        user            password            files  directory                    target                          ftp-host            ftp-port    ftp-user        ftp-password
+# type    hostname    sql   host     database   user     password     files   directory                 target                        ftp-host         ftp-port   ftp-user   ftp-password
 
-  ftp     localhost   7     dbHost   dbName     databaseUser    dbPassword   4      /source/files/to/backup            /ftp-server/backup-location     ftp-server.com              21       ftpUsername      ftpPassword
+  ftp     localhost   7     dbHost   dbName     dbUser   dbPassword   4       /source/files/to/backup   /ftp-server/backup-location   ftp-server.com   21         ftpUser    ftpPassword
