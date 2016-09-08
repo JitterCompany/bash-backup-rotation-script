@@ -30,18 +30,16 @@ do
                         PASSWORD=`echo $line | awk '{print $8}'`
                         FILES_FR=`echo $line | awk '{print $9}'`
                         DIRECTORY=`echo $line | awk '{print $10}'`
-                        DEST_BASE_DIR=`echo $line | awk '{print $11}'`
-
-                        DEST_DIR="$DEST_BASE_DIR/$HOST/$DATABASE"
+                        DEST_DIR=`echo $line | awk '{print $11}'`
 
                         if [ ! -e "$DIRECTORY" ]; then
                                 mkdir "$DIRECTORY"
                         fi
-                        if [ ! -e "$DEST_DIR" ]; then
-                                mkdir "$DEST_DIR"
-                        fi
 
                         if  [ "$TYPE" == 'local' ]; then
+                          if [ ! -e "$DEST_DIR" ]; then
+                                mkdir "$DEST_DIR"
+                          fi
                           $SCRIPT --hostname HOSTNAME --compression COMPRESSION --sql "$SQLFR" $HOST $USER $PASSWORD $DATABASE --backupdir "$FILES_FR" $DIRECTORY --targetdir "$DEST_DIR"
                         fi
 
