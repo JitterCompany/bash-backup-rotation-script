@@ -26,6 +26,7 @@
 #       Local Backups
 #       - type: for local backups set this to 'local', for ftp backups set this to 'ftp'
 #       - hostname: the hostname of the server to backup
+#       - compression: the compression type used (lzma or gzip)
 #       - sql: how often to backup the sql database, see chart above
 #       - host: the hostname of the mysql server to connect to
 #       - database: the name of the database to backup
@@ -36,14 +37,15 @@
 #       - target: where to send the files
 #
 # LOCAL BACKUPS
-# type    hostname    sql   host     database   user     password     files   directory                 target
+# type    hostname    compression   sql   host     database   user     password     files   directory                 target
 
-  local   localhost   7	    dbHost   dbName     dbUser   dbPassword   6       /source/files/to/backup   /backup/target/location
+  local   localhost   lzma          7     dbHost   dbName     dbUser   dbPassword   6       /source/files/to/backup   /backup/target/location
 
 
 #       FTP Backups
 #       - type: for local backups set this to 'local', for ftp backups set this to 'ftp'
 #       - hostname: the hostname of the server to backup
+#       - compression: the compression type used (lzma or gzip)
 #       - sql: how often to backup the sql database, see chart above
 #       - host: the hostname of the mysql server to connect to
 #       - database: the name of the database to backup
@@ -58,6 +60,6 @@
 #       - ftp-password: the password to your ftp account
 #
 # FTP BACKUPS
-# type    hostname    sql   host     database   user     password     files   directory                 target                        ftp-host         ftp-port   ftp-user   ftp-password
+# type    hostname    compression   sql   host     database   user     password     files   directory                 target                        ftp-host         ftp-port   ftp-user   ftp-password
 
-  ftp     localhost   7     dbHost   dbName     dbUser   dbPassword   4       /source/files/to/backup   /ftp-server/backup-location   ftp-server.com   21         ftpUser    ftpPassword
+  ftp     localhost   lzma          7     dbHost   dbName     dbUser   dbPassword   4       /source/files/to/backup   /ftp-server/backup-location   ftp-server.com   21         ftpUser    ftpPassword

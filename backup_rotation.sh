@@ -26,6 +26,9 @@ TARGET_DIR=/dir-where-backups-are-put
 # Hostname
 HOST="put-your-hostname-here"
 
+# Compression type
+COMPRESSION=lzma
+
 # Admin email
 MAIL="email-address"
 
@@ -145,6 +148,17 @@ do
       else
         echo "Error in --hostname syntax. Script failed."
         exit 1
+      fi
+      ;;
+
+    --compression)
+      if [[ "$#" -gt 1 && ! "$2" = \-* ]]; then
+        if [ "$2" == "lzma" ] || [ "$2" == "gzip" ]; then
+            COMPRESSION=$2
+        else
+            echo "Error in --compression syntax. Script failed."
+            exit 1
+        fi
       fi
       ;;
 
@@ -270,6 +284,16 @@ done
 
 # STARTING BACKUP SCRIPT
 
+# Set compression parameters
+
+if [ "$COMPRESSION" == "lzma" ]; then
+  tar_extension='xz'
+  tar_options='-chJf'
+else
+  tar_extension='gz'
+  tar_options='-chzf'
+fi
+
 #Check date
 
 # Get current month and week day number
@@ -350,7 +374,7 @@ mkdir -p $TMP_DIR/backup.incoming
 
 # Destination file names
 base_backup_filename=`date +"%d-%m-%Y"`$BACKUP_TYPE
-backup_filename=$base_backup_filename'.tar.xz'
+backup_filename=$base_backup_filename'.tar.'$tar_extension
 
 # SQL section
 if [ ! $PERFORM_SQL_BACKUP -eq 0 ]; then
@@ -358,7 +382,7 @@ if [ ! $PERFORM_SQL_BACKUP -eq 0 ]; then
   echo "Perform sql backup..."
 
   # Destination file names
-  backup_filename=$base_backup_filename'.sql.tar.xz'
+  backup_filename=$base_backup_filename'.sql.tar.'$tar_extension
   
   backup_filename_sql=$backup_filename
 
@@ -368,7 +392,7 @@ if [ ! $PERFORM_SQL_BACKUP -eq 0 ]; then
   echo "Compress sql backup.."
 
   cd $TMP_DIR/backup.incoming
-  tar -cJf $backup_filename mysql_dump.sql
+  tar $tar_options $backup_filename mysql_dump.sql
 
 
   #clean sql file
@@ -387,11 +411,11 @@ cd $CURRENT_DIR
 
 # Perform Files Backup
 if [ ! $PERFORM_FILES_BACKUP -eq 0 ]; then
-  backup_filename=$base_backup_filename'.data.tar.xz'
+  backup_filename=$base_backup_filename'.data.tar.'$tar_extension
   echo "Perform file backup"
   # Compress files
   cd $TARGET_DIR
-  tar -chJf $TMP_DIR/backup.incoming/$backup_filename $SOURCE_DIR
+  tar $tar_options $TMP_DIR/backup.incoming/$backup_filename $SOURCE_DIR
 fi
 
 # FTP
