@@ -336,9 +336,11 @@ if [ ! $FTP_BACKUP_OPTION -eq 0 ]; then
   find $TMP_DIR/.ftp_cache/ -maxdepth 1 -mtime +$RETENTION_DAY_LOOKUP -name "*$BACKUP_TYPE*" -exec rm -rv {} \;
 fi
 
-# Cleanup expired backups
-echo "Removing expired backups..."
-find $TARGET_DIR/ -maxdepth 1 -mtime +$RETENTION_DAY_LOOKUP -name "*$BACKUP_TYPE*" -exec rm -rv {} \;
+if [ ! $FILE_BACKUP_OPTION -eq 0 ]; then
+  # Cleanup expired backups
+  echo "Removing expired backups..."
+  find $TARGET_DIR/ -maxdepth 1 -mtime +$RETENTION_DAY_LOOKUP -name "*$BACKUP_TYPE*" -exec rm -rv {} \;
+fi
 
 PERFORM_SQL_BACKUP=0
 PERFORM_FILES_BACKUP=0
@@ -463,25 +465,25 @@ if [ ! $LOCAL_BACKUP_OPTION -eq 0 ]; then
   echo "Copy backup to local dir.."
   # Move the files
   mv -v $TMP_DIR/backup.incoming/* $TARGET_DIR
-fi
 
-# Optional check if source files exist. Email if failed.
-if [ -f $TARGET_DIR/$backup_filename ]; then
-  # +Randomly generate a number to reduse the chances of overwriting an existing file. Helps ensure we get a current list and not something possibly stale.
-  RANDOM=$(( ( RANDOM % 100 )  + 1 ))
-  # +Temp file to allow easy emailing of current list of backups.
-  BACKUP_LIST=$TMP_DIR/backup.list.$RANDOM.txt
-  touch $BACKUP_LIST
-  echo "Sending mail"
-  echo "Local backup finished. Here's the current list of backups." > $BACKUP_LIST
-  echo " " >> $BACKUP_LIST
-  # +Sleep here to give the system a chance to catch up. If it goes to fast, the total size count could sometimes be incorrect.
-  sleep 2
-  ls -lah $TARGET_DIR >> $BACKUP_LIST
-  cat $BACKUP_LIST | mail -s "$EMAIL_SUBJECT_TAG Finished !" $MAIL
-  rm $TMP_DIR/backup.list.*
-else
-  echo "$TARGET_DIR/$backup_filename does not seem to exist. Something failed." | mail -s "$EMAIL_SUBJECT_TAG Finished, but failed." $MAIL
+  # Optional check if source files exist. Email if failed.
+  if [ -f $TARGET_DIR/$backup_filename ]; then
+    # +Randomly generate a number to reduse the chances of overwriting an existing file. Helps ensure we get a current list and not something possibly stale.
+    RANDOM=$(( ( RANDOM % 100 )  + 1 ))
+    # +Temp file to allow easy emailing of current list of backups.
+    BACKUP_LIST=$TMP_DIR/backup.list.$RANDOM.txt
+    touch $BACKUP_LIST
+    echo "Sending mail"
+    echo "Local backup finished. Here's the current list of backups." > $BACKUP_LIST
+    echo " " >> $BACKUP_LIST
+    # +Sleep here to give the system a chance to catch up. If it goes to fast, the total size count could sometimes be incorrect.
+    sleep 2
+    ls -lah $TARGET_DIR >> $BACKUP_LIST
+    cat $BACKUP_LIST | mail -s "$EMAIL_SUBJECT_TAG Finished !" $MAIL
+    rm $TMP_DIR/backup.list.*
+  else
+    echo "$TARGET_DIR/$backup_filename does not seem to exist. Something failed." | mail -s "$EMAIL_SUBJECT_TAG Finished, but failed." $MAIL
+  fi
 fi
 
 echo "Finish.."
