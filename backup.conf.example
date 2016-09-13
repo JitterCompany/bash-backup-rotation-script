@@ -35,11 +35,14 @@
 #       - files: how often to backup the website files, see chart above
 #       - directory: the directory to backup
 #       - target: where to send the files
+#       - r-day: number of day the daily backup keep
+#       - r-week: number of day the weekly backup keep
+#       - r-month: number of day the monthly backup keep
 #
 # LOCAL BACKUPS
-# type    hostname    compression   sql   host     database   user     password     files   directory                 target
+# type    hostname    compression   sql   host     database   user     password     files   directory                 target                   r-day   r-week   r-month
 
-  local   localhost   lzma          7     dbHost   dbName     dbUser   dbPassword   6       /source/files/to/backup   /backup/target/location
+  local   localhost   lzma          7     dbHost   dbName     dbUser   dbPassword   6       /source/files/to/backup   /backup/target/location  5       14       60
 
 
 #       FTP Backups
@@ -54,12 +57,15 @@
 #       - files: how often to backup the website files, see chart above
 #       - directory: the directory to backup
 #       - target: where to send the files
+#       - r-day: number of day the daily backup keep
+#       - r-week: number of day the weekly backup keep
+#       - r-month: number of day the monthly backup keep
 #       - ftp-host: the hostname of the ftp server
 #       - ftp-port: the port for the ftp server, usually 21
 #       - ftp-user: the username of your ftp account
 #       - ftp-password: the password to your ftp account
 #
 # FTP BACKUPS
-# type    hostname    compression   sql   host     database   user     password     files   directory                 target                        ftp-host         ftp-port   ftp-user   ftp-password
+# type    hostname    compression   sql   host     database   user     password     files   directory                 target                        r-day   r-week   r-month   ftp-host         ftp-port   ftp-user   ftp-password
 
-  ftp     localhost   lzma          7     dbHost   dbName     dbUser   dbPassword   4       /source/files/to/backup   /ftp-server/backup-location   ftp-server.com   21         ftpUser    ftpPassword
+  ftp     localhost   lzma          7     dbHost   dbName     dbUser   dbPassword   4       /source/files/to/backup   /ftp-server/backup-location   5       14       60        ftp-server.com   21         ftpUser    ftpPassword
