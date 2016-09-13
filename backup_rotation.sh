@@ -486,4 +486,7 @@ if [ ! $LOCAL_BACKUP_OPTION -eq 0 ]; then
   fi
 fi
 
+#Remove tmp dir
+rm -rf $TMP_DIR/backup.incoming
+
 echo "Finish.."
