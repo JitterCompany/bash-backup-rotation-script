@@ -155,6 +155,7 @@ do
       if [[ "$#" -gt 1 && ! "$2" = \-* ]]; then
         if [ "$2" == "lzma" ] || [ "$2" == "gzip" ]; then
             COMPRESSION=$2
+            shift
         else
             echo "Error in --compression syntax. Script failed."
             exit 1
