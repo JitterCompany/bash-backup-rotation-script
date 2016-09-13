@@ -144,6 +144,7 @@ do
     --hostname)
       if [[ "$#" -gt 1 && ! "$2" = \-* ]]; then
        HOST=$2
+       TMP_DIR="$TMP_DIR/$HOST"
        shift
       else
         echo "Error in --hostname syntax. Script failed."
