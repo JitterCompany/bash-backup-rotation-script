@@ -143,7 +143,7 @@ do
 
     --hostname)
       if [[ "$#" -gt 1 && ! "$2" = \-* ]]; then
-       HOST=${2%/}
+       HOST=$2
        shift
       else
         echo "Error in --hostname syntax. Script failed."
