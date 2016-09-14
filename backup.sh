@@ -43,7 +43,7 @@ do
                           if [ ! -e "$DEST_DIR" ]; then
                                 mkdir "$DEST_DIR"
                           fi
-                          $SCRIPT --hostname HOSTNAME --compression COMPRESSION --sql "$SQLFR" $HOST $USER $PASSWORD $DATABASE --backupdir "$FILES_FR" $DIRECTORY --targetdir "$DEST_DIR" --retention $RETENTION_DAY $RETENTION_WEEK $RETENTION_MONTH
+                          $SCRIPT --hostname $HOSTNAME --compression $COMPRESSION --sql "$SQLFR" $HOST $USER $PASSWORD $DATABASE --backupdir "$FILES_FR" $DIRECTORY --targetdir "$DEST_DIR" --retention $RETENTION_DAY $RETENTION_WEEK $RETENTION_MONTH
                         fi
 
                         if  [ "$TYPE" == 'ftp' ]; then
@@ -51,7 +51,7 @@ do
                           FTP_PORT=`echo $line | awk '{print $16}'`
                           FTP_USER=`echo $line | awk '{print $17}'`
                           FTP_PASSWORD=`echo $line | awk '{print $18}'`
-                          $SCRIPT --hostname HOSTNAME --compression COMPRESSION --sql "$SQLFR" $HOST $USER $PASSWORD $DATABASE --backupdir "$FILES_FR" $DIRECTORY --ftp "$FTP_HOST" "$FTP_PORT" "$FTP_USER" "$FTP_PASSWORD" "$DEST_DIR" --retention $RETENTION_DAY $RETENTION_WEEK $RETENTION_MONTH
+                          $SCRIPT --hostname $HOSTNAME --compression $COMPRESSION --sql "$SQLFR" $HOST $USER $PASSWORD $DATABASE --backupdir "$FILES_FR" $DIRECTORY --ftp "$FTP_HOST" "$FTP_PORT" "$FTP_USER" "$FTP_PASSWORD" "$DEST_DIR" --retention $RETENTION_DAY $RETENTION_WEEK $RETENTION_MONTH
                         fi
 
                 fi
