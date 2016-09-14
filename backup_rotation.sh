@@ -418,7 +418,6 @@ if [ ! $PERFORM_FILES_BACKUP -eq 0 ]; then
   backup_filename=$base_backup_filename'.data.tar.'$tar_extension
   echo "Perform file backup"
   # Compress files
-  cd $TARGET_DIR
   tar $tar_options $TMP_DIR/backup.incoming/$backup_filename $SOURCE_DIR
 fi
 
