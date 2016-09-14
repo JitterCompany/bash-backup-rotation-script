@@ -26,6 +26,7 @@
 #       Local Backups
 #       - type: for local backups set this to 'local', for ftp backups set this to 'ftp'
 #       - hostname: the hostname of the server to backup
+#       - email: admin email
 #       - compression: the compression type used (lzma or gzip)
 #       - sql: how often to backup the sql database, see chart above
 #       - host: the hostname of the mysql server to connect to
@@ -40,14 +41,15 @@
 #       - r-month: number of day the monthly backup keep
 #
 # LOCAL BACKUPS
-# type    hostname    compression   sql   host     database   user     password     files   directory                 target                   r-day   r-week   r-month
+# type    hostname    email               compression   sql   host     database   user     password     files   directory                 target                   r-day   r-week   r-month
 
-  local   localhost   lzma          7     dbHost   dbName     dbUser   dbPassword   6       /source/files/to/backup   /backup/target/location  5       14       60
+  local   localhost   email@example.com   lzma          7     dbHost   dbName     dbUser   dbPassword   6       /source/files/to/backup   /backup/target/location  5       14       60
 
 
 #       FTP Backups
 #       - type: for local backups set this to 'local', for ftp backups set this to 'ftp'
 #       - hostname: the hostname of the server to backup
+#       - email: admin email
 #       - compression: the compression type used (lzma or gzip)
 #       - sql: how often to backup the sql database, see chart above
 #       - host: the hostname of the mysql server to connect to
@@ -66,6 +68,6 @@
 #       - ftp-password: the password to your ftp account
 #
 # FTP BACKUPS
-# type    hostname    compression   sql   host     database   user     password     files   directory                 target                        r-day   r-week   r-month   ftp-host         ftp-port   ftp-user   ftp-password
+# type    hostname    email               compression   sql   host     database   user     password     files   directory                 target                        r-day   r-week   r-month   ftp-host         ftp-port   ftp-user   ftp-password
 
-  ftp     localhost   lzma          7     dbHost   dbName     dbUser   dbPassword   4       /source/files/to/backup   /ftp-server/backup-location   5       14       60        ftp-server.com   21         ftpUser    ftpPassword
+  ftp     localhost   email@example.com   lzma          7     dbHost   dbName     dbUser   dbPassword   4       /source/files/to/backup   /ftp-server/backup-location   5       14       60        ftp-server.com   21         ftpUser    ftpPassword
