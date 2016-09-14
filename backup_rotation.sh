@@ -450,7 +450,19 @@ if [ ! $FTP_BACKUP_OPTION -eq 0 ]; then
 
   ftp -n -v -p $FTP_HOST $FTP_PORT < $TMP_DIR/backup.incoming/ftp_command.tmp
 
-  echo "FTP Backup finish" | mail -s "$EMAIL_SUBJECT_TAG FTP backup finished !" $MAIL
+  # +Randomly generate a number to reduse the chances of overwriting an existing file. Helps ensure we get a current list and not something possibly st
+  FTP_RANDOM=$(( ( RANDOM % 100 )  + 1 ))
+  # +Temp file to allow easy emailing of current list of backups.
+  FTP_BACKUP_LIST=$TMP_DIR/.ftp_cache/ftp.backup.list.$FTP_RANDOM.txt
+  touch $FTP_BACKUP_LIST
+  echo "Sending mail"
+  echo "FTP backup finished. Here's the current list of backups." > $LOCAL_BACKUP_LIST
+  echo " " >> $FTP_BACKUP_LIST
+  # +Sleep here to give the system a chance to catch up. If it goes to fast, the total size count could sometimes be incorrect.
+  sleep 2
+  ls -lah $TMP_DIR/.ftp_cache >> $FTP_BACKUP_LIST
+  cat $FTP_BACKUP_LIST | mail -s "$EMAIL_SUBJECT_TAG FTP backup finished !" $MAIL
+  rm $TMP_DIR/ftp.backup.list.*
 fi
 
 
@@ -471,18 +483,18 @@ if [ ! $LOCAL_BACKUP_OPTION -eq 0 ]; then
   # Optional check if source files exist. Email if failed.
   if [ -f $TARGET_DIR/$backup_filename ]; then
     # +Randomly generate a number to reduse the chances of overwriting an existing file. Helps ensure we get a current list and not something possibly stale.
-    RANDOM=$(( ( RANDOM % 100 )  + 1 ))
+    LOCAL_RANDOM=$(( ( RANDOM % 100 )  + 1 ))
     # +Temp file to allow easy emailing of current list of backups.
-    BACKUP_LIST=$TMP_DIR/backup.list.$RANDOM.txt
-    touch $BACKUP_LIST
+    LOCAL_BACKUP_LIST=$TMP_DIR/local.backup.list.$LOCAL_RANDOM.txt
+    touch $LOCAL_BACKUP_LIST
     echo "Sending mail"
-    echo "Local backup finished. Here's the current list of backups." > $BACKUP_LIST
-    echo " " >> $BACKUP_LIST
+    echo "Local backup finished. Here's the current list of backups." > $LOCAL_BACKUP_LIST
+    echo " " >> $LOCAL_BACKUP_LIST
     # +Sleep here to give the system a chance to catch up. If it goes to fast, the total size count could sometimes be incorrect.
     sleep 2
-    ls -lah $TARGET_DIR >> $BACKUP_LIST
-    cat $BACKUP_LIST | mail -s "$EMAIL_SUBJECT_TAG Finished !" $MAIL
-    rm $TMP_DIR/backup.list.*
+    ls -lah $TARGET_DIR >> $LOCAL_BACKUP_LIST
+    cat $LOCAL_BACKUP_LIST | mail -s "$EMAIL_SUBJECT_TAG Local backup finished !" $MAIL
+    rm $TMP_DIR/local.backup.list.*
   else
     echo "$TARGET_DIR/$backup_filename does not seem to exist. Something failed." | mail -s "$EMAIL_SUBJECT_TAG Finished, but failed." $MAIL
   fi
