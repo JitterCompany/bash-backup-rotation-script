@@ -449,6 +449,7 @@ if [ ! $FTP_BACKUP_OPTION -eq 0 ]; then
 
   ftp -n -v -p $FTP_HOST $FTP_PORT < $TMP_DIR/backup.incoming/ftp_command.tmp
 
+
   # +Randomly generate a number to reduse the chances of overwriting an existing file. Helps ensure we get a current list and not something possibly st
   FTP_RANDOM=$(( ( RANDOM % 100 )  + 1 ))
   # +Temp file to allow easy emailing of current list of backups.
@@ -457,9 +458,12 @@ if [ ! $FTP_BACKUP_OPTION -eq 0 ]; then
   echo "Sending mail"
   echo "FTP backup finished. Here's the current list of backups." > $FTP_BACKUP_LIST
   echo " " >> $FTP_BACKUP_LIST
-  # +Sleep here to give the system a chance to catch up. If it goes to fast, the total size count could sometimes be incorrect.
-  sleep 2
-  ls -lah $TMP_DIR/.ftp_cache >> $FTP_BACKUP_LIST
+
+  echo "user $FTP_USER $FTP_PASSWORD" >> $TMP_DIR/ftp.backup.list.command.tmp
+  echo "cd $FTP_TARGET_DIR" >> $TMP_DIR/ftp.backup.list.command.tmp
+  echo "dir" >> $TMP_DIR/ftp.backup.list.command.tmp
+  ftp -n -v -p $FTP_HOST $FTP_PORT < ftp.backup.list.command.tmp | grep tar >> $FTP_BACKUP_LIST
+
   cat $FTP_BACKUP_LIST | mail -s "$EMAIL_SUBJECT_TAG FTP backup finished !" $MAIL
   rm $TMP_DIR/ftp.backup.list.*
 fi
