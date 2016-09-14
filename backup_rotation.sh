@@ -452,10 +452,10 @@ if [ ! $FTP_BACKUP_OPTION -eq 0 ]; then
   # +Randomly generate a number to reduse the chances of overwriting an existing file. Helps ensure we get a current list and not something possibly st
   FTP_RANDOM=$(( ( RANDOM % 100 )  + 1 ))
   # +Temp file to allow easy emailing of current list of backups.
-  FTP_BACKUP_LIST=$TMP_DIR/.ftp_cache/ftp.backup.list.$FTP_RANDOM.txt
+  FTP_BACKUP_LIST=$TMP_DIR/ftp.backup.list.$FTP_RANDOM.txt
   touch $FTP_BACKUP_LIST
   echo "Sending mail"
-  echo "FTP backup finished. Here's the current list of backups." > $LOCAL_BACKUP_LIST
+  echo "FTP backup finished. Here's the current list of backups." > $FTP_BACKUP_LIST
   echo " " >> $FTP_BACKUP_LIST
   # +Sleep here to give the system a chance to catch up. If it goes to fast, the total size count could sometimes be incorrect.
   sleep 2
