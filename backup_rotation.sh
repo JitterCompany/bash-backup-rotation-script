@@ -94,7 +94,7 @@ EXTRA_MYSQLDUMP_OPTIONS=''
 # --------------------------------------------------
 
 # 0 or 1
-LOCAL_BACKUP_OPTION=1
+LOCAL_BACKUP_OPTION=0
 FTP_BACKUP_OPTION=0
 
 #--------------------------------------
