@@ -462,7 +462,7 @@ if [ ! $FTP_BACKUP_OPTION -eq 0 ]; then
   echo "user $FTP_USER $FTP_PASSWORD" >> $TMP_DIR/ftp.backup.list.command.tmp
   echo "cd $FTP_TARGET_DIR" >> $TMP_DIR/ftp.backup.list.command.tmp
   echo "dir" >> $TMP_DIR/ftp.backup.list.command.tmp
-  ftp -n -v -p $FTP_HOST $FTP_PORT < ftp.backup.list.command.tmp | grep tar >> $FTP_BACKUP_LIST
+  ftp -n -v -p $FTP_HOST $FTP_PORT < $TMP_DIR/ftp.backup.list.command.tmp | grep tar >> $FTP_BACKUP_LIST
 
   cat $FTP_BACKUP_LIST | mail -s "$EMAIL_SUBJECT_TAG FTP backup finished !" $MAIL
   rm $TMP_DIR/ftp.backup.list.*
