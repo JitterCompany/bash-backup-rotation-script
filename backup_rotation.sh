@@ -338,7 +338,7 @@ if [ ! $FTP_BACKUP_OPTION -eq 0 ]; then
   find $TMP_DIR/.ftp_cache/ -maxdepth 1 -mtime +$RETENTION_DAY_LOOKUP -name "*$BACKUP_TYPE*" -exec rm -rv {} \;
 fi
 
-if [ ! $FILE_BACKUP_OPTION -eq 0 ]; then
+if [ ! $FILES_BACKUP_OPTION -eq 0 ]; then
   # Cleanup expired backups
   echo "Removing expired backups..."
   find $TARGET_DIR/ -maxdepth 1 -mtime +$RETENTION_DAY_LOOKUP -name "*$BACKUP_TYPE*" -exec rm -rv {} \;
