@@ -87,6 +87,8 @@ Please consider your storage size when chosing retention settings.
 		#put this line in crontab
 		#This will run it 10 minutes after midnight.
 		10 0 * * * [path to your backup_rotation.sh]
+		#or
+		10 0 * * * cd [path to bash-backup-rotation-script folder] && ./backup.sh
 
 8. If crontab is not available, consult your distributions packages. Ubuntu Server includes it by default.
 
