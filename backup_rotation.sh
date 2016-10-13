@@ -377,7 +377,7 @@ mkdir -p $TMP_DIR/backup.incoming
 #cd $TMP_DIR/backup.incoming
 
 # Destination file names
-base_backup_filename=`date +"%d-%m-%Y"`$BACKUP_TYPE
+base_backup_filename=`date +"%Y-%m-%d"`$BACKUP_TYPE
 backup_filename=$base_backup_filename'.tar.'$tar_extension
 
 # SQL section
