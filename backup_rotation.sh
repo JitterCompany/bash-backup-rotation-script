@@ -284,6 +284,8 @@ do
   shift
 done
 
+EMAIL_SUBJECT_TAG="[backup of $SOURCE_DIR@$HOST]"
+
 # STARTING BACKUP SCRIPT
 
 # Set compression parameters
