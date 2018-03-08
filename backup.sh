@@ -27,7 +27,7 @@ do
                         SQLFR=`echo $line | awk '{print $5}'`
                         HOST=`echo $line | awk '{print $6}'`
                         DATABASE=`echo $line | awk '{print $7}'`
-                        USER=`echo $line | awk '{print $8}'`
+                        DATABASE_USER=`echo $line | awk '{print $8}'`
                         PASSWORD=`echo $line | awk '{print $9}'`
                         FILES_FR=`echo $line | awk '{print $10}'`
                         DIRECTORY=`echo $line | awk '{print $11}'`
