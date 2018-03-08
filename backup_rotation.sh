@@ -10,7 +10,7 @@
 # WITH SWITCHES.
 # --------------------------
 
-# -------------------.ftp_cache
+# --------------------
 # Backup Destination option, please read the README to find the possible value
 # --------------------
 
@@ -335,13 +335,13 @@ if [ ! $FTP_BACKUP_OPTION -eq 0 ]; then
 
   cd $CURRENT_DIR
 
-  # Create list of expired backups
-  mkdir -p $TMP_DIR/.ftp_cache/
-  find $TMP_DIR/.ftp_cache/ -maxdepth 1 -name "*$BACKUP_TYPE*" -mtime +$RETENTION_DAY_LOOKUP -exec basename {} ';' >>  $TMP_DIR/.ftp_cache/search_file.tmp
-  
-  # List has been created, now lets get rid of them locally.
-  # Delete expired backups
-  find $TMP_DIR/.ftp_cache/ -maxdepth 1 -mtime +$RETENTION_DAY_LOOKUP -name "*$BACKUP_TYPE*" -exec rm -rv {} \;
+  # get a list of all existing files of this type (daily,weekly or monthly)
+  echo "user $FTP_USER $FTP_PASSWORD" > $TMP_DIR/ftp.backup.list.command.tmp
+  echo "cd $FTP_TARGET_DIR" >> $TMP_DIR/ftp.backup.list.command.tmp
+  echo "dir" >> $TMP_DIR/ftp.backup.list.command.tmp
+  FTP_EXISTING_FILES=`ftp -n -v -p $FTP_HOST $FTP_PORT < $TMP_DIR/ftp.backup.list.command.tmp | grep -o "backup-.*\$BACKUP_TYPE"`
+  rm $TMP_DIR/ftp.backup.list.command.tmp
+
 fi
 
 if [ ! $LOCAL_BACKUP_OPTION -eq 0 ]; then
@@ -444,11 +444,6 @@ fi
 # FTP
 if [ ! $FTP_BACKUP_OPTION -eq 0 ]; then
   echo "Copy backup to FTP.."
-  #create cache copy to detect the remote file
-  #remove previous backup
-  mkdir -p $TMP_DIR/.ftp_cache
-  touch $TMP_DIR/.ftp_cache/$backup_filename
-  touch $TMP_DIR/.ftp_cache/$backup_filename_sql
 
   echo "user $FTP_USER $FTP_PASSWORD" >> $TMP_DIR/backup.incoming/ftp_command.tmp
   echo "mkdir $FTP_TARGET_DIR" >> $TMP_DIR/backup.incoming/ftp_command.tmp
@@ -460,11 +455,16 @@ if [ ! $FTP_BACKUP_OPTION -eq 0 ]; then
     echo "put $TMP_DIR/backup.incoming/$backup_filename_sql $FTP_TARGET_DIR/$backup_filename_sql" >> $TMP_DIR/backup.incoming/ftp_command.tmp
   fi
 
-  
-  for f in $(<$TMP_DIR/.ftp_cache/search_file.tmp)
-  do
-   echo "deleting $f"
-   echo "delete $f" >>  $TMP_DIR/backup.incoming/ftp_command.tmp
+  for f in $FTP_EXISTING_FILES; do
+    date_of_file_str=`echo $f | sed -e s/backup-// -e "s/\$BACKUP_TYPE.*//"`
+    date_of_file=`date --date="$date_of_file_str" "+%s"`
+    old_date=`date --date="$RETENTION_DAY_LOOKUP days ago" "+%s"`
+    if [ "$old_date" -gt "$date_of_file" ]; then
+        echo "file outdated, deleting: $f"
+        echo "delete $f" >>  $TMP_DIR/backup.incoming/ftp_command.tmp
+    else
+        echo "file recent enough ($date_of_file_str), keeping: $f"
+    fi
   done
   echo "bye" >>  $TMP_DIR/backup.incoming/ftp_command.tmp
 
