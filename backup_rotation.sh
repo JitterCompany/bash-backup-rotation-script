@@ -15,7 +15,7 @@
 # --------------------
 
 # A Temporary Location to work with files , DO NOT END THE DIRECTORY WITH BACKSLASH !
-TMP_DIR=/tmp
+TMP_DIR=./tmp
 
 # The directory to be backed up , DO NOT END THE DIRECTORY WITH BACKSLASH !
 SOURCE_DIR=/dir-that-you-want-to-backup
@@ -291,11 +291,13 @@ EMAIL_SUBJECT_TAG="[backup of $SOURCE_DIR@$HOST]"
 # Set compression parameters
 
 if [ "$COMPRESSION" == "lzma" ]; then
-  tar_extension='xz'
+  tar_extension='.tar.xz'
   tar_options='-chJf'
-else
-  tar_extension='gz'
+elif [ "$COMPRESSION" == "gzip" ]; then
+  tar_extension='.tar.gz'
   tar_options='-chzf'
+else
+  tar_extension=''
 fi
 
 #Check date
@@ -379,8 +381,8 @@ mkdir -p $TMP_DIR/backup.incoming
 #cd $TMP_DIR/backup.incoming
 
 # Destination file names
-base_backup_filename=`date +"%Y-%m-%d"`$BACKUP_TYPE
-backup_filename=$base_backup_filename'.tar.'$tar_extension
+base_backup_filename=backup-`date +"%Y-%m-%d"`$BACKUP_TYPE
+backup_filename=$base_backup_filename''$tar_extension
 
 # SQL section
 if [ ! $PERFORM_SQL_BACKUP -eq 0 ]; then
@@ -388,21 +390,27 @@ if [ ! $PERFORM_SQL_BACKUP -eq 0 ]; then
   echo "Perform sql backup..."
 
   # Destination file names
-  backup_filename=$base_backup_filename'.sql.tar.'$tar_extension
+  backup_filename=$base_backup_filename'.sql'$tar_extension
   
   backup_filename_sql=$backup_filename
 
   # Dump MySQL tables
   mysqldump -h $DB_HOST -u $DB_USER -p$DB_PASSWORD $DB_DATABASE $EXTRA_MYSQLDUMP_OPTIONS > $TMP_DIR/backup.incoming/mysql_dump.sql
 
-  echo "Compress sql backup.."
+  if [ ! "$COMPRESSION" == "none" ]; then
+      echo "Compress sql backup.."
 
-  cd $TMP_DIR/backup.incoming
-  tar $tar_options $backup_filename mysql_dump.sql
+      cd $TMP_DIR/backup.incoming
+      tar $tar_options $backup_filename mysql_dump.sql
 
-
-  #clean sql file
-  rm $TMP_DIR/backup.incoming/mysql_dump.sql
+      #clean sql file
+      cd $CURRENT_DIR
+      rm $TMP_DIR/backup.incoming/mysql_dump.sql
+  else
+      cd $TMP_DIR/backup.incoming
+      mv mysql_dump.sql $backup_filename
+      cd $CURRENT_DIR
+  fi
 fi
 
 cd $CURRENT_DIR
@@ -417,10 +425,18 @@ cd $CURRENT_DIR
 
 # Perform Files Backup
 if [ ! $PERFORM_FILES_BACKUP -eq 0 ]; then
-  backup_filename=$base_backup_filename'.data.tar.'$tar_extension
-  echo "Perform file backup"
-  # Compress files
-  tar $tar_options $TMP_DIR/backup.incoming/$backup_filename $SOURCE_DIR
+  backup_filename=$base_backup_filename'.data'$tar_extension
+  backup_filepath=$TMP_DIR/backup.incoming/$backup_filename
+
+  if [ ! "$COMPRESSION" == "none" ]; then
+      echo "Compress file backup..."
+
+      # Compress files
+      tar $tar_options $backup_filepath $SOURCE_DIR
+  else
+      # no compression: assume the source is a file that can be used directly
+      backup_filepath=$SOURCE_DIR
+  fi
 fi
 
 # FTP
@@ -436,7 +452,7 @@ if [ ! $FTP_BACKUP_OPTION -eq 0 ]; then
   echo "mkdir $FTP_TARGET_DIR" >> $TMP_DIR/backup.incoming/ftp_command.tmp
   echo "cd $FTP_TARGET_DIR" >> $TMP_DIR/backup.incoming/ftp_command.tmp
   echo "binary" >> $TMP_DIR/backup.incoming/ftp_command.tmp
-  echo "put $TMP_DIR/backup.incoming/$backup_filename $FTP_TARGET_DIR/$backup_filename" >> $TMP_DIR/backup.incoming/ftp_command.tmp
+  echo "put $backup_filepath $FTP_TARGET_DIR/$backup_filename" >> $TMP_DIR/backup.incoming/ftp_command.tmp
   
   if [ ! $PERFORM_SQL_BACKUP -eq 0 ]; then
     echo "put $TMP_DIR/backup.incoming/$backup_filename_sql $FTP_TARGET_DIR/$backup_filename_sql" >> $TMP_DIR/backup.incoming/ftp_command.tmp
@@ -464,7 +480,7 @@ if [ ! $FTP_BACKUP_OPTION -eq 0 ]; then
   echo "user $FTP_USER $FTP_PASSWORD" >> $TMP_DIR/ftp.backup.list.command.tmp
   echo "cd $FTP_TARGET_DIR" >> $TMP_DIR/ftp.backup.list.command.tmp
   echo "dir" >> $TMP_DIR/ftp.backup.list.command.tmp
-  ftp -n -v -p $FTP_HOST $FTP_PORT < $TMP_DIR/ftp.backup.list.command.tmp | grep tar >> $FTP_BACKUP_LIST
+  ftp -n -v -p $FTP_HOST $FTP_PORT < $TMP_DIR/ftp.backup.list.command.tmp | grep backup >> $FTP_BACKUP_LIST
 
   cat $FTP_BACKUP_LIST | mail -s "$EMAIL_SUBJECT_TAG FTP backup finished !" $MAIL
   rm $TMP_DIR/ftp.backup.list.*
@@ -481,9 +497,17 @@ if [ ! $LOCAL_BACKUP_OPTION -eq 0 ]; then
     exit
   fi
 
-  echo "Copy backup to local dir.."
-  # Move the files
-  mv -v $TMP_DIR/backup.incoming/* $TARGET_DIR
+  # Move the files (just the sql in case of no compression)
+  if [ "$(ls -A $TMP_DIR/backup.incoming/)" ]; then
+      echo "Move backup to local dir.."
+      mv -v $TMP_DIR/backup.incoming/* $TARGET_DIR
+  fi
+
+  # Copy source files if existing (if no compression)
+  if [ -f $backup_filepath ]; then
+      echo "Copy backup to local dir.."
+      cp $backup_filepath $TARGET_DIR/$backup_filename
+  fi
 
   # Optional check if source files exist. Email if failed.
   if [ -f $TARGET_DIR/$backup_filename ]; then
