@@ -332,19 +332,21 @@ week_day=`date +"%u"`
 CURRENT_DIR=${PWD}
 
 if [ ! $FTP_BACKUP_OPTION -eq 0 ]; then
+
+  cd $CURRENT_DIR
+
   # Create list of expired backups
   mkdir -p $TMP_DIR/.ftp_cache/
-  cd $TMP_DIR/.ftp_cache/
-  find -maxdepth 1 -name "*$BACKUP_TYPE*" -mtime +$RETENTION_DAY_LOOKUP >>  $TMP_DIR/.ftp_cache/search_file.tmp
-  cd $CURRENT_DIR
+  find $TMP_DIR/.ftp_cache/ -maxdepth 1 -name "*$BACKUP_TYPE*" -mtime +$RETENTION_DAY_LOOKUP -exec basename {} ';' >>  $TMP_DIR/.ftp_cache/search_file.tmp
+  
   # List has been created, now lets get rid of them locally.
   # Delete expired backups
   find $TMP_DIR/.ftp_cache/ -maxdepth 1 -mtime +$RETENTION_DAY_LOOKUP -name "*$BACKUP_TYPE*" -exec rm -rv {} \;
 fi
 
-if [ ! $FILES_BACKUP_OPTION -eq 0 ]; then
+if [ ! $LOCAL_BACKUP_OPTION -eq 0 ]; then
   # Cleanup expired backups
-  echo "Removing expired backups..."
+  echo "Removing expired (local) backups..."
   find $TARGET_DIR/ -maxdepth 1 -mtime +$RETENTION_DAY_LOOKUP -name "*$BACKUP_TYPE*" -exec rm -rv {} \;
 fi
 
@@ -461,7 +463,8 @@ if [ ! $FTP_BACKUP_OPTION -eq 0 ]; then
   
   for f in $(<$TMP_DIR/.ftp_cache/search_file.tmp)
   do
-   echo "delete ${f/.\//}" >>  $TMP_DIR/backup.incoming/ftp_command.tmp
+   echo "deleting $f"
+   echo "delete $f" >>  $TMP_DIR/backup.incoming/ftp_command.tmp
   done
   echo "bye" >>  $TMP_DIR/backup.incoming/ftp_command.tmp
 
