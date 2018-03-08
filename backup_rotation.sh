@@ -154,7 +154,7 @@ do
 
     --compression)
       if [[ "$#" -gt 1 && ! "$2" = \-* ]]; then
-        if [ "$2" == "lzma" ] || [ "$2" == "gzip" ]; then
+        if [ "$2" == "lzma" ] || [ "$2" == "gzip" ] || [ "$2" == "none" ]; then
             COMPRESSION=$2
             shift
         else
