@@ -461,7 +461,7 @@ if [ ! $FTP_BACKUP_OPTION -eq 0 ]; then
     old_date=`date --date="$RETENTION_DAY_LOOKUP days ago" "+%s"`
     if [ "$old_date" -gt "$date_of_file" ]; then
         echo "file outdated, deleting: $f"
-        echo "delete $f" >>  $TMP_DIR/backup.incoming/ftp_command.tmp
+        echo "delete $FTP_TARGET_DIR/$f" >>  $TMP_DIR/backup.incoming/ftp_command.tmp
     else
         echo "file recent enough ($date_of_file_str), keeping: $f"
     fi
