@@ -339,7 +339,7 @@ if [ ! $FTP_BACKUP_OPTION -eq 0 ]; then
   echo "user $FTP_USER $FTP_PASSWORD" > $TMP_DIR/ftp.backup.list.command.tmp
   echo "cd $FTP_TARGET_DIR" >> $TMP_DIR/ftp.backup.list.command.tmp
   echo "dir" >> $TMP_DIR/ftp.backup.list.command.tmp
-  FTP_EXISTING_FILES=`ftp -n -v -p $FTP_HOST $FTP_PORT < $TMP_DIR/ftp.backup.list.command.tmp | grep -o "backup-.*\$BACKUP_TYPE"`
+  FTP_EXISTING_FILES=`ftp -n -v -p $FTP_HOST $FTP_PORT < $TMP_DIR/ftp.backup.list.command.tmp | grep -o "backup-.*\$BACKUP_TYPE.*"`
   rm $TMP_DIR/ftp.backup.list.command.tmp
 
 fi
